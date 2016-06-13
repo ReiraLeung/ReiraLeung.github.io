@@ -11,7 +11,7 @@
 <meta property="og:url" content="http://yoursite.com/2016/06/10/Python-rabbitMQ/index.html">
 <meta property="og:site_name" content="Welcome to the Wonderland">
 <meta property="og:description" content="分布式系统大作业这学期分布式大作业要求，使用Master-Worker结构来组织一个分布式系统，然后使用这个系统来完成PageRank的计算。PageRank是在一个图中求受欢迎程度的情境，需要多伦反复迭代完成。每一次迭代都需要一次checkpoint确保内容刷入磁盘。我们小组选择了Python语言，在消息传递的过程中，选择了rabbitMQ。rabbitMQ是个效果很好的消息传递和收发工具，今天">
-<meta property="og:updated_time" content="2016-06-11T14:18:01.000Z">
+<meta property="og:updated_time" content="2016-06-13T07:52:12.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Python&rabbitQM">
 <meta name="twitter:description" content="分布式系统大作业这学期分布式大作业要求，使用Master-Worker结构来组织一个分布式系统，然后使用这个系统来完成PageRank的计算。PageRank是在一个图中求受欢迎程度的情境，需要多伦反复迭代完成。每一次迭代都需要一次checkpoint确保内容刷入磁盘。我们小组选择了Python语言，在消息传递的过程中，选择了rabbitMQ。rabbitMQ是个效果很好的消息传递和收发工具，今天">
@@ -58,9 +58,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -92,9 +92,10 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h3 id="分布式系统大作业"><a href="#分布式系统大作业" class="headerlink" title="分布式系统大作业"></a>分布式系统大作业</h3><p>这学期分布式大作业要求，使用Master-Worker结构来组织一个分布式系统，然后使用这个系统来完成PageRank的计算。PageRank是在一个图中求受欢迎程度的情境，需要多伦反复迭代完成。每一次迭代都需要一次checkpoint确保内容刷入磁盘。<br>我们小组选择了Python语言，在消息传递的过程中，选择了rabbitMQ。rabbitMQ是个效果很好的消息传递和收发工具，今天熟悉一下rabbitMQ的python版本的使用方法。</p>
-<h2 id="rabbitMQ"><a href="#rabbitMQ" class="headerlink" title="rabbitMQ"></a>rabbitMQ</h2><p>rabbitMQ的官网是<a href="http://www.rabbitmq.com/" target="_blank" rel="external">http://www.rabbitmq.com/</a>, 在CSDN上有一套教程<a href="http://blog.csdn.net/column/details/rabbitmq.html" target="_blank" rel="external">rabbitMQ从入门到精通</a>, 也挺详细的，我在自己的博客里提出自己安装rabbitMQ时候遇到的问题的解答。<br>我是在mac上配置环境的，我<strong>非常非常不推荐</strong>使用官网上面的Standalone包，原因是它并不会帮助你把rabbitmq依赖包全都安装好，可能需要你自己去谷歌百度安装各种各样的工具比如Erlang，如果不熟悉mac环境配置的话，不建议尝试。比如说我在使用这种方法安装rabbitMQ时候遇到的问题如下，使用了命令 rabbitmq-server ，最终显示completed with 0 plugins，文档中说结尾应该是completed with [n] plugins，n指的是开放数目，0绝对不正常。我到处查阅这个0到底是因为什么故障，几乎没有人遇到这个问题或者解答这个问题。最后就放弃了这种安装方式。<br><em>在此友情提示，mac安装需要修改.bash_profile文档，请在修改它之前备份，因为如果不小心动了别的设置，还有挽救的余地.</em><br>官网上提供了另外一种安装方法，反而更加简单，就是使用<a href="http://www.rabbitmq.com/install-homebrew.html" target="_blank" rel="external">Homebrew</a>,  <strong>brew</strong>是mac终端非常重要的一个指令，因为mac没有apt-get，brew可以使mac终端安装很多包，而且依赖包也能帮助安装。比如说Erlang这个包，既可以使用brew单独安装，也可以不管他，只安装RabbitMQ，brew会在需要的时候会自动帮忙补齐的。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo ruby <span class="_">-e</span> <span class="string">"<span class="variable">$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)</span>"</span></span><br><span class="line">$ sudo brew install rabbitmq</span><br></pre></td></tr></table></figure></p>
-<p>到这一步还没有安装完毕，因为mac的环境变量需要配置，在bash_profile文件备份好了之后，我们打开这个文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim ~/.bash_profile</span><br></pre></td></tr></table></figure></p>
-<p>在文件的最底部插入 <strong>PATH=$PATH:/usr/local/sbin</strong>保存退出，此时rabbitMQ就安装完毕了，你在终端的任意一个文件夹都可以输入指令 rabbitmq-server，启动RabbitMQ Server。如果你没有修改过设置，最终应该显示completed with <strong>10</strong>plugins，而不是0.</p>
+<h2 id="rabbitMQ"><a href="#rabbitMQ" class="headerlink" title="rabbitMQ"></a>rabbitMQ</h2><p>rabbitMQ的官网是<a href="http://www.rabbitmq.com/" target="_blank" rel="external">http://www.rabbitmq.com/</a>, 在CSDN上有一套教程<a href="http://blog.csdn.net/column/details/rabbitmq.html" target="_blank" rel="external">rabbitMQ从入门到精通</a>, 也挺详细的，我在自己的博客里提出自己安装rabbitMQ时候遇到的问题的解答。<br>我是在mac上配置环境的，我<strong>非常非常不推荐</strong>使用官网上面的Standalone包，原因是它并不会帮助你把rabbitmq依赖包全都安装好，可能需要你自己去谷歌百度安装各种各样的工具比如Erlang，如果不熟悉mac环境配置的话，不建议尝试。比如说我在使用这种方法安装rabbitMQ时候，send和receive无论怎样都找不到server的位置，最后就放弃了这种安装方式。<br><em>在此友情提示，mac安装需要修改.bash_profile文档，请在修改它之前备份，因为如果不小心动了别的设置，还有挽救的余地.</em><br>官网上提供了另外一种安装方法，反而更加简单，就是使用<a href="http://www.rabbitmq.com/install-homebrew.html" target="_blank" rel="external">Homebrew</a>,  <strong>brew</strong>是mac终端非常重要的一个指令，因为mac没有apt-get，brew可以使mac终端安装很多包，而且依赖包也能帮助安装。比如说Erlang这个包，既可以使用brew单独安装，也可以不管他，只安装RabbitMQ，brew会在需要的时候会自动帮忙补齐的。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo ruby <span class="_">-e</span> <span class="string">"<span class="variable">$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)</span>"</span></span><br><span class="line">sudo brew install rabbitmq</span><br></pre></td></tr></table></figure></p>
+<p>到这一步还没有安装完毕，因为mac的环境变量需要配置，在bash_profile文件备份好了之后，我们打开这个文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vim ~/.bash_profile</span><br></pre></td></tr></table></figure></p>
+<p>在文件的最底部插入 <strong>PATH=$PATH:/usr/local/sbin</strong>保存退出，此时rabbitMQ就安装完毕了，你在终端的任意一个文件夹都可以输入指令 rabbitmq-server，启动RabbitMQ Server。</p>
+<p>如果是linux的Debian或者Ubuntu系统，不建议在不健全的系统中安装deb，实在是太不靠谱了，各种容易出错，调了半天也不能成功安装，走如下步骤更加可靠。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">'deb http://www.rabbitmq.com/debian/ testing main'</span> |</span><br><span class="line">        sudo tee /etc/apt/sources.list.d/rabbitmq.list</span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install rabbitmq-server</span><br></pre></td></tr></table></figure></p>
 <h2 id="Python使用"><a href="#Python使用" class="headerlink" title="Python使用"></a>Python使用</h2><p>关于RabbitMQ的使用，官网非常亲切的给了<a href="http://www.rabbitmq.com/getstarted.html" target="_blank" rel="external">新手教程</a>。最开始的时候尝试了hello World的代码，代码不是很长，比较简单易懂。需要注意的是<strong>pika</strong>这个python库的安装，使用pip install pika即可。pip这个指令如果之前没有安装的话sudo easy_install pip即可。以下为helloworld的两段代码。</p>
 <p>send.py：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="keyword">import</span> pika</span><br><span class="line"></span><br><span class="line">connection = pika.BlockingConnection(pika.ConnectionParameters(</span><br><span class="line">        host=<span class="string">'localhost'</span>))</span><br><span class="line">channel = connection.channel()</span><br><span class="line"></span><br><span class="line">channel.queue_declare(queue=<span class="string">'hello'</span>)</span><br><span class="line"></span><br><span class="line">channel.basic_publish(exchange=<span class="string">''</span>,</span><br><span class="line">                      routing_key=<span class="string">'hello'</span>,</span><br><span class="line">                      body=<span class="string">'好好学习天天向上!'</span>)</span><br><span class="line">print(<span class="string">" [x] Sent 'Hello World!'"</span>)</span><br><span class="line">connection.close()</span><br></pre></td></tr></table></figure></p>
 <p>receive.py：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> pika</span><br><span class="line"></span><br><span class="line">connection = pika.BlockingConnection(pika.ConnectionParameters(</span><br><span class="line">        host=<span class="string">'localhost'</span>))</span><br><span class="line">channel = connection.channel()</span><br><span class="line"></span><br><span class="line">channel.queue_declare(queue=<span class="string">'hello'</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">callback</span><span class="params">(ch, method, properties, body)</span>:</span></span><br><span class="line">    print(<span class="string">" [x] Received %s"</span> % body)</span><br><span class="line"></span><br><span class="line">channel.basic_consume(callback,</span><br><span class="line">                      queue=<span class="string">'hello'</span>,</span><br><span class="line">                      no_ack=<span class="keyword">True</span>)</span><br><span class="line"></span><br><span class="line">print(<span class="string">' [*] Waiting for messages. To exit press CTRL+C'</span>)</span><br><span class="line">channel.start_consuming()</span><br></pre></td></tr></table></figure></p>
@@ -103,7 +104,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/06/10/Python-rabbitMQ/" data-id="cipb8c1l500007sf9z5kmmcop" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2016/06/10/Python-rabbitMQ/" data-id="cipdq2p1m00000tf9kbewolgg" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Python-rabbitMQ/">Python rabbitMQ</a></li></ul>
@@ -116,7 +117,7 @@
   
   
     <a href="/2016/06/05/使用hexo搭建自己的博客/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Ancien</strong>
+      <strong class="article-nav-caption">Older</strong>
       <div class="article-nav-title">使用hexo搭建自己的博客</div>
     </a>
   
@@ -134,7 +135,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Mot-clés</h3>
+    <h3 class="widget-title">Tags</h3>
     <div class="widget">
       <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python-rabbitMQ/">Python rabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li></ul>
     </div>
@@ -144,7 +145,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
       <a href="/tags/Python-rabbitMQ/" style="font-size: 10px;">Python rabbitMQ</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a>
     </div>
@@ -163,7 +164,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Articles récents</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
         
@@ -196,7 +197,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2016 Reira Leung<br>
-      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>
